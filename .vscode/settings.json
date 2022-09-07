@@ -1,0 +1,8 @@
+{
+    "python.autoComplete.extraPaths": [
+        "C:\\Users\\Quentin Steinke\\Desktop\\Temp\\MyProject\\Intermediate\\PythonStub"
+    ],
+    "python.analysis.extraPaths": [
+        "C:\\Users\\Quentin Steinke\\Desktop\\Temp\\MyProject\\Intermediate\\PythonStub"
+    ]
+}
