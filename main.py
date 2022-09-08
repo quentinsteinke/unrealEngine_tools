@@ -1,42 +1,70 @@
 import unreal
 import sys
-from utils import rename, apply_material, add_prefix
+
 
 @unreal.uclass()
 class EditorUtils(unreal.GlobalEditorUtilityBase):
     pass
 
-def testing():
-    selected_assets = EditorUtils().get_selected_assets()
 
+selected_assets = EditorUtils().get_selected_assets()
+
+name = str(sys.argv[1])
+addName = str(sys.argv[2])
+prefix = str(sys.argv[3])
+addPrefix = str(sys.argv[4])
+setMaterial = str(sys.argv[5])
+
+
+def testing():
     for asset in selected_assets:
         if asset.get_class() == "Object":
-            print("-------------------------------")
             print(f"{asset.get_name()} is a Object")
-            print("-------------------------------")
         elif asset.get_class() == "Material":
-            print("-------------------------------")
             print(f"{asset.get_name()} is a Material")
-            print("-------------------------------")
         else:
-            print("-------------------------------")
             print(f"{asset.get_name()} is not a Material or an Object")
             print(f"It's class is type {asset}")
-            print("-------------------------------")
 
 
+def rename():
+    print(f"Name here: {name}")
 
+
+def add_prefix():
+    print(f"addPrefix is {prefix}")
+
+
+def apply_material():
+    print("applying material")
+
+
+def get_material():
+    material = selected_assets[-1]
+
+    return material
+
+
+def set_material():
+    material = get_material()
+
+    for asset in selected_assets:
+        if "StaticMesh" in str(asset.get_class()):
+            print(asset.get_name())
+            # Change material
+            asset.set_material(0, material)
+
+
+############## Main Function Loop ##############
 def main():
-    name = str(sys.argv[1])
-    addName = str(sys.argv[2])
-    prefix = str(sys.argv[3])
-    addPrefix = str(sys.argv[4])
-
     if addName == "true":
-        print(f"Name here: {name}")
+        rename()
 
-    if prefix == "true":
-        print(f"addPrefix is {addPrefix}")
+    if addPrefix == "true":
+        add_prefix()
+    
+    if setMaterial == "true":
+        set_material()
             
 
 if __name__ == "__main__":
