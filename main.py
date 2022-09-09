@@ -13,6 +13,8 @@ class MeshComp(unreal.MeshComponent):
 
 ############## Variables ##############
 selected_assets = EditorUtils().get_selected_assets()
+materialList = {}
+materialInstanceList = {}
 
 name = str(sys.argv[1])
 addName = str(sys.argv[2])
@@ -20,26 +22,12 @@ prefix = str(sys.argv[3])
 addPrefix = str(sys.argv[4])
 setMaterial = str(sys.argv[5])
 smartApplyMaterials = str(sys.argv[6])
-# materialPath = str(sys.argv[7])
+materialType = str(sys.argv[7])
 
 
 ############## Functoins ##############
-materialList = {}
-def get_all_materials():
-    asset_list = unreal.AssetRegistryHelpers.get_asset_registry().get_assets_by_class("Material")
-    for asset in asset_list:
-        asset_name = str(asset.asset_name)
-        asset_path = str(asset.object_path)
-        if asset in materialList:
-            pass
-        else:
-            materialList[asset_name] = asset_path
-
-
-def get_asset_by_name(name: str, searchList: dict):
-    asset = (searchList[name])
-    print(f"returning asset {unreal.load_asset(asset)}")
-    return unreal.load_asset(asset)
+# for obj in selected_assets:
+#     print(obj.get_class())
 
 
 def testing():
@@ -50,7 +38,52 @@ def testing():
             print(f"{asset.get_name()} is a Material")
         else:
             print(f"{asset.get_name()} is not a Material or an Object")
-            print(f"It's class is type {asset}")
+
+
+def strip_prefix(name: str):
+    try:
+        splitName = name.split("_")
+    except AttributeError:
+        return name
+
+    sliceNumber = 0
+
+    if splitName[0] == "M":
+        sliceNumber = len(splitName[0]) + 1
+    elif splitName[0] == "MI":
+        sliceNumber = len(splitName[0]) + 1
+    else:
+        pass
+    
+    name = name[sliceNumber:]
+
+    return name
+
+
+def get_all_materials():
+    material_asset_list = unreal.AssetRegistryHelpers.get_asset_registry().get_assets_by_class("Material")
+    for asset in material_asset_list:
+        asset_name = strip_prefix(str(asset.asset_name))
+        asset_path = str(asset.object_path)
+        if asset in materialList:
+            pass
+        else:
+            materialList[asset_name] = asset_path
+
+    material_instance_asset_list = unreal.AssetRegistryHelpers.get_asset_registry().get_assets_by_class("MaterialInstanceConstant")
+    for asset in material_instance_asset_list:
+        asset_name = str(asset.asset_name)
+        asset_path = str(asset.object_path)
+        if asset in materialInstanceList:
+            pass
+        else:
+            materialInstanceList[asset_name] = asset_path
+
+
+def get_asset_by_name(name: str, searchList: dict):
+    asset = (searchList[name])
+    # print(f"returning asset {unreal.load_asset(asset)}")
+    return unreal.load_asset(asset)
 
 
 def rename(n: str=None):
@@ -87,18 +120,25 @@ def set_material(slot):
 # Get material slot names, find matching named materials and apply to slot
 def smart_apply_materials():
     get_all_materials()
+
+    if materialType == "true":
+        instance = materialInstanceList
+    elif materialType == "false":
+        instance = materialList
+
     for asset in selected_assets:
         if "StaticMesh" in str(asset.get_class()):
             sm_component = unreal.StaticMeshComponent()
             sm_component.set_static_mesh(asset)
             materialSlotNames = unreal.StaticMeshComponent.get_material_slot_names(sm_component)
             for x, matname in enumerate(materialSlotNames):
+                matname = strip_prefix(str(matname))
                 try:
-                    material = get_asset_by_name(str(matname), materialList)
+                    material = get_asset_by_name(str(matname), instance)
                     print(f"found {material}")
                     asset.set_material(int(x), material)
                 except KeyError:
-                    print(f"Material '{matname}' not found on {asset.get_full_name()}")
+                    unreal.log_warning(f"Material '{matname}' not found on {asset.get_full_name()}")
         
 
 ############## Main Function Loop ##############
