@@ -2,4 +2,5 @@
 ## ------------Feature List------------
 * ~~Assign material to all selected assets~~
 * ~~Rename assets with predefined prefix~~
-* Fix smart apply materials to use instance materials first
+* ~~Fix smart apply materials to use instance materials first~~
+* Get renaming and prefix working

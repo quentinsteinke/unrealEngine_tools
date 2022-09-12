@@ -57,7 +57,7 @@ def strip_prefix(name: str):
     sliceNumber = 0
 
     if splitName[0] in prefixes:
-        sliceNumber = len(splitName[0] + 1)
+        sliceNumber = len(splitName[0]) + 1
     else:
         pass
 
@@ -76,7 +76,7 @@ def strip_prefix(name: str):
 def get_all_materials():
     material_asset_list = unreal.AssetRegistryHelpers.get_asset_registry().get_assets_by_class("Material")
     for asset in material_asset_list:
-        asset_name = strip_prefix(str(asset.asset_name))
+        asset_name = strip_prefix(str(asset.asset_name)).upper()
         asset_path = str(asset.object_path)
         if asset not in materialList: materialList[asset_name] = asset_path
         # if asset in materialList:
@@ -86,7 +86,7 @@ def get_all_materials():
 
     material_instance_asset_list = unreal.AssetRegistryHelpers.get_asset_registry().get_assets_by_class("MaterialInstanceConstant")
     for asset in material_instance_asset_list:
-        asset_name = strip_prefix(str(asset.asset_name))
+        asset_name = strip_prefix(str(asset.asset_name)).upper()
         asset_path = str(asset.object_path)
         if asset not in materialInstanceList: materialInstanceList[asset_name] = asset_path
         # if asset in materialInstanceList:
@@ -96,7 +96,7 @@ def get_all_materials():
 
 
 def get_asset_by_name(name: str, searchList: dict):
-    asset = (searchList[name])
+    asset = (searchList[name.upper()])
     # print(f"returning asset {unreal.load_asset(asset)}")
     return unreal.load_asset(asset)
 
@@ -104,7 +104,7 @@ def get_asset_by_name(name: str, searchList: dict):
 def rename(n: str=None):
     for asset in selected_assets:
         if n == None:
-            print(f"Name here: {name}")
+            print(f"Name here: {asset.get_name()}")
         else:
             print(f"New name is {n}")
 
