@@ -29,7 +29,6 @@ materialType = str(sys.argv[7])
 # for obj in selected_assets:
 #     print(obj.get_class())
 
-
 def testing():
     for asset in selected_assets:
         if asset.get_class() == "Object":
@@ -41,6 +40,15 @@ def testing():
 
 
 def strip_prefix(name: str):
+    prefixes = [
+        "M",
+        "MI",
+        "SM",
+        "SKM",
+        "T",
+        "BP",
+    ]
+    
     try:
         splitName = name.split("_")
     except AttributeError:
@@ -48,12 +56,17 @@ def strip_prefix(name: str):
 
     sliceNumber = 0
 
-    if splitName[0] == "M":
-        sliceNumber = len(splitName[0]) + 1
-    elif splitName[0] == "MI":
-        sliceNumber = len(splitName[0]) + 1
+    if splitName[0] in prefixes:
+        sliceNumber = len(splitName[0] + 1)
     else:
         pass
+
+    # if splitName[0] == "M":
+    #     sliceNumber = len(splitName[0]) + 1
+    # elif splitName[0] == "MI":
+    #     sliceNumber = len(splitName[0]) + 1
+    # else:
+    #     pass
     
     name = name[sliceNumber:]
 
@@ -65,19 +78,21 @@ def get_all_materials():
     for asset in material_asset_list:
         asset_name = strip_prefix(str(asset.asset_name))
         asset_path = str(asset.object_path)
-        if asset in materialList:
-            pass
-        else:
-            materialList[asset_name] = asset_path
+        if asset not in materialList: materialList[asset_name] = asset_path
+        # if asset in materialList:
+        #     pass
+        # else:
+        #     materialList[asset_name] = asset_path
 
     material_instance_asset_list = unreal.AssetRegistryHelpers.get_asset_registry().get_assets_by_class("MaterialInstanceConstant")
     for asset in material_instance_asset_list:
-        asset_name = str(asset.asset_name)
+        asset_name = strip_prefix(str(asset.asset_name))
         asset_path = str(asset.object_path)
-        if asset in materialInstanceList:
-            pass
-        else:
-            materialInstanceList[asset_name] = asset_path
+        if asset not in materialInstanceList: materialInstanceList[asset_name] = asset_path
+        # if asset in materialInstanceList:
+        #     pass
+        # else:
+        #     materialInstanceList[asset_name] = asset_path
 
 
 def get_asset_by_name(name: str, searchList: dict):
@@ -143,6 +158,7 @@ def smart_apply_materials():
 
 ############## Main Function Loop ##############
 def main():
+    # Renaming Start
     if addName == "true" and addPrefix == "true":
         newname = prefix + name
         rename(newname)
@@ -152,10 +168,13 @@ def main():
 
     elif addPrefix == "true":
         add_prefix()
+    # Renaming End
     
+    # Set Material
     if setMaterial == "true":
         set_material(0)
     
+    # Smart Set Material
     if smartApplyMaterials == "true":
         smart_apply_materials()
             

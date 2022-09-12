@@ -24,6 +24,16 @@ for x, name in enumerate(namesList):
     name = strip_prefix(name)
     print(name)
 
+def breakingout():
+    this = 20
+    print("something")
+    if this > 1:
+        return "something"
+    
+    print("notthis")
+
+breakingout()
+
     # dictionaryList[name] = values[x]
 
 # for i in dictionaryList:
