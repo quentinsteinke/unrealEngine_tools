@@ -70,6 +70,7 @@ def strip_name(name: str):
         else:
             pass
     
+    # Replacing underscores
     name = name.replace(strRemove, "")
     if name[-1] == "_":
         name = name.replace(name[-1], "")
