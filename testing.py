@@ -45,6 +45,10 @@ def strip_name(name: str):
             pass
     
     name = name.replace(strRemove, "")
+    if name[-1] == "_":
+        name = name.replace(name[-1], "")
+    if name[0] == "_":
+        name = name.replace(name[0], "")
 
     return name
 
@@ -57,6 +61,7 @@ def main():
         namesList[strip_name(name)] = "Asset"
     
     print(namesList)
+
 
 if __name__ == "__main__":
     main()
