@@ -50,7 +50,7 @@ def strip_name(name: str):
     suffix = []
 
     # Making list
-    suffix_number = 50
+    suffix_number = 99
     while suffix_number > 0:
         if suffix_number > 9:
             suffix.append(f"0{str(suffix_number)}")
