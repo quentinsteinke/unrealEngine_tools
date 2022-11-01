@@ -62,20 +62,15 @@ def strip_name(name: str):
 
         suffix_number -= 1
     
-    strRemove = ""
     for x in suffix:
         if x in splitName[-1]:
-            strRemove = x
+            name = name[: len(x)*-1]
             break
         else:
             pass
     
-    # Replacing underscores
-    name = name.replace(strRemove, "")
     if name[-1] == "_":
-        name = name.replace(name[-1], "")
-    if name[0] == "_":
-        name = name.replace(name[0], "")
+        name = name[:-1]
 
     return name
     

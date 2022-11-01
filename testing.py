@@ -24,7 +24,7 @@ def strip_name(name: str):
     suffix = []
 
     # Making list
-    suffix_number = 20
+    suffix_number = 99
     while suffix_number > 0:
         if suffix_number > 9:
             suffix.append(f"0{str(suffix_number)}")
@@ -36,32 +36,17 @@ def strip_name(name: str):
 
         suffix_number -= 1
     
-    strRemove = ""
     for x in suffix:
         if x in splitName[-1]:
-            strRemove = x
+            name = name[: len(x)*-1]
             break
         else:
             pass
     
-    name = name.replace(strRemove, "")
     if name[-1] == "_":
-        name = name.replace(name[-1], "")
-    if name[0] == "_":
-        name = name.replace(name[0], "")
+        name = name[:-1]
 
     return name
 
 
-def main():
-    names = ["M_lambert1", "MI_other_material7", "MI_thirdThing12", "M_material_Black_005", "nonNumberMat", "material_something_02"]
-    namesList = {}
-    
-    for i, name in enumerate(names):
-        namesList[strip_name(name)] = "Asset"
-    
-    print(namesList)
-
-
-if __name__ == "__main__":
-    main()
+print(strip_name("M_Something_interesting_050"))
