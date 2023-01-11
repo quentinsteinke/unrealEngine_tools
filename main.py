@@ -1,5 +1,8 @@
 import unreal
 import sys
+import os
+import csv
+import math
 
 
 @unreal.uclass()
@@ -13,14 +16,16 @@ materialList = {}
 materialInstanceList = {}
 
 # Unreal Arguments #
-name = str(sys.argv[1])
-addName = str(sys.argv[2])
-prefix = str(sys.argv[3])
-addPrefix = str(sys.argv[4])
-setMaterial = str(sys.argv[5])
-smartApplyMaterials = str(sys.argv[6])
-materialType = str(sys.argv[7])
-# materialSlot = str(sys.argv[8])
+run_command = str(sys.argv[1])
+
+if run_command == "material":
+    try:
+        setMaterial = str(sys.argv[2])
+        smartApplyMaterials = str(sys.argv[3])
+        materialType = str(sys.argv[4])
+        # materialSlot = str(sys.argv[8])
+    except IndexError:
+        pass
 
 
 ############## Functoins ##############
@@ -113,17 +118,17 @@ def get_asset_by_name(name: str, searchList: dict):
     return unreal.load_asset(asset)
 
 
-def rename(n: str=None):
-    for asset in selected_assets:
-        if n == None:
-            print(f"Name here: {asset.get_name()}")
-        else:
-            print(f"New name is {n}")
+# def rename(n: str=None):
+#     for asset in selected_assets:
+#         if n == None:
+#             print(f"Name here: {asset.get_name()}")
+#         else:
+#             print(f"New name is {n}")
 
 
-def add_prefix():
-    for asset in selected_assets:
-        print(f"addPrefix is {prefix + asset.get_name()}")
+# def add_prefix():
+#     for asset in selected_assets:
+#         print(f"addPrefix is {prefix + asset.get_name()}")
 
 
 def get_last_selected():
@@ -163,29 +168,63 @@ def smart_apply_materials():
                     asset.set_material(int(x), material)
                 except KeyError:
                     unreal.log_warning(f"Material '{matname}' not found on {asset.get_full_name()}")
+
+
+def position_selected_actors():
+    selected_actors = unreal.EditorLevelLibrary.get_selected_level_actors()
+    for actor in selected_actors:
+        if actor.get_class() == unreal.StaticMeshActor.static_class():
+            sm = actor.static_mesh_component.static_mesh
+
+            sm_path = sm.get_editor_property("asset_import_data").get_first_filename()
+            sm_path = sm_path[:-4]
+            sm_path = sm_path + ".csv"
+            print(sm_path)
+
+            with open(str(sm_path), mode="r") as data_file:
+                data_reader = csv.reader(data_file, delimiter=",")
+                for x, row in enumerate(data_reader):
+                    if x == 0:
+                        print("setting location")
+                        new_location = unreal.Vector(float(row[0]), float(row[1]), float(row[2]))
+                        actor.set_actor_location(new_location, False, False)
+                    elif x == 1:
+                        print("setting rotation")
+                        # new_rotation = unreal.Rotator(float(row[0] * (180/math.pi)), float(row[1] * (180/math.pi)), float(row[2] * (180/math.pi)))
+                        # print(new_rotation)
+                        # actor.set_actor_rotation(new_rotation, False)
+                    elif x == 2:
+                        print("setting scale")
+                        new_scale = unreal.Vector(float(row[0]), float(row[1]), float(row[2]))
+                        actor.set_actor_scale3d(new_scale)
+        # actor.set_actor_location()
         
 
 ############## Main Function Loop ##############
 def main():
     # Renaming Start
-    if addName == "true" and addPrefix == "true":
-        newname = prefix + name
-        rename(newname)
+    # if addName == "true" and addPrefix == "true":
+    #     newname = prefix + name
+    #     rename(newname)
 
-    elif addName == "true":
-        rename()
+    # elif addName == "true":
+    #     rename()
 
-    elif addPrefix == "true":
-        add_prefix()
+    # elif addPrefix == "true":
+    #     add_prefix()
     # Renaming End
     
     # Set Material
-    if setMaterial == "true":
-        set_material(0)
+    if run_command == "material":
+        if setMaterial == "true":
+            set_material(0)
+        
+        # Smart Set Material
+        if smartApplyMaterials == "true":
+            smart_apply_materials()
     
-    # Smart Set Material
-    if smartApplyMaterials == "true":
-        smart_apply_materials()
+    elif run_command == "position":
+        position_selected_actors()
             
 
 if __name__ == "__main__":
